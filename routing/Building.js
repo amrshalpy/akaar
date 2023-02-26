@@ -34,9 +34,10 @@ if(err){
    
     const building =  Building({
       image:req.file.filename,
-    
+    price:req.body.price,
+    name:req.body.name,
     },
-      req.body);
+      );
       building.save().then((result) => {
       res.status(200).json({'data': result})
      }).catch((err) => {
