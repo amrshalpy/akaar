@@ -4,6 +4,8 @@ const building = mongoose.Schema({
         ref:'user',
         },
     name:{type:String},
+    image:{type:String},
+    // images:{type:Array},
     category:{type:String},
     roomKind:{type:String},
     rintType:{type:String},

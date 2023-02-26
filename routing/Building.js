@@ -2,15 +2,53 @@ const express = require('express');
 const app = express();
 const Building = require('../model/building');
 const User = require('../model/users')
-app.post('/building',async(req,res)=>{
-    try{
-        const user = await User.find({user:req.body.user})
-        const building =  Building(req.body);
-        const saveBuilding = await building.save();
-        res.status(200).json({'data': saveBuilding})
-    }catch(er){
-        res.status(500).json({'data':er})
+const multer = require('multer')
+
+const storage =multer.diskStorage({
+  destination: 'images',
+  filename: function (req, file, cb) {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+      cb(null, file.fieldname + '-' + uniqueSuffix)
     }
+});
+const filter = (req,file,cb)=>{
+  if(file.mimetype=='image/png'|| file.mimetype=='image/jpeg'){
+      cb(null,true)
+  }else{
+      cb(null,false);
+  }
+}
+const uploadImage = multer({
+  storage:storage,
+  fileFilter:filter,
+  // limits: { fileSize: maxSize }
+}).single('image')
+
+app.post('/building',async(req,res)=>{
+  // const user = await User.find({user:req.body.user})
+  uploadImage(req,res,(err)=>{
+if(err){
+ console.log(err);
+}else{
+  
+   
+    const building =  Building({
+      image:req.file.filename,
+    
+    },
+      req.body);
+      building.save().then((result) => {
+      res.status(200).json({'data': result})
+     }).catch((err) => {
+      res.status(500).json({'data':err})
+     });;
+    
+
+   
+
+}
+  })
+   
 })
 
 // update
@@ -130,6 +168,8 @@ app.get('/buildings',async(req,res)=>{
     res.status(500).json({'data':er})
 }
 })
+
+// get lat and long
 app.get('/building',async(req,res)=>{
   try{
     const qLat= req.query.lat;

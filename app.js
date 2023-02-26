@@ -8,6 +8,9 @@ const category = require('./routing/Category')
 
 
 app.use([express.urlencoded({extended: true}), express.json()]);
+app.use(express.static('images'));
+app.use("/building",express.static('images'));
+
 app.use('/',user);
 app.use('/',category);
 app.use('/',building);
